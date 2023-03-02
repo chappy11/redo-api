@@ -1,0 +1,89 @@
+ public function signupcustomer_post(){
+            $profile_picture =  $_FILES["profilePicture"]["name"];
+            $username = $this->post("username");
+            $password = $this->post("password");
+            $firstname = $this->post("firstname");
+            $middleInitial = $this->post("mi");
+            $lastname = $this->post("lastname");
+            $gender = $this->post("gender");
+            $birthdate = $this->post("birthdate");
+            $address = $this->post("address");
+            $email = $this->post("email");
+            $contact = $this->post("contact");
+
+            $isEmailExist = $this->isEmailExist($email,"customer");
+            $isMobileExist = $this->isMobileExist($contact,"customer");
+            if($isEmailExist){
+                
+                $this->res(0,null,"Your Email is Already Exist",0);
+            
+            }else if($isMobileExist){
+            
+                $this->res(0,null,"Your Mobile Number is Alreay Exist",0);
+            
+            }else{
+            
+                $userData = array(
+                    "username" => $username,
+                    "password" => md5($password),
+                    "user_roles" => 2, //customer
+                    "user_status" => 0, //status is active
+                );
+    
+                $isCreated = $this->User_Model->createUser($userData);
+                
+                if(!$isCreated){
+                  $this->res(0,null,"Something went wrong",0);
+                }else{
+                   
+                    $newUser = $this->User_Model->getNewUser(); //get latest user
+              
+                    try{
+                     
+                        $newCustomer = array(
+                            "user_id" => $newUser[0]->user_id,
+                            "email" => $email,
+                            "contact" => $contact,
+                            "firstname" => $firstname,
+                            "lastname" => $lastname,
+                            "middlename" => $middleInitial,
+                            "gender" => $gender,
+                            "birthdate" => $birthdate,
+                            "addresss" => $address,
+                            "profilePic" => "profiles/".$profile_picture
+                        );
+            
+                        $createCustomer = $this->Customer_Model->createCustomer($newCustomer);
+                    
+                        if($createCustomer){
+                            
+                            $notif_data = array(
+                                "notif_title"=>"New Registered Customer",
+                                "notif_message"=> $newUser[0]->username." was successfully register to our system please check it for approval",
+                                "notif_receiver"=> 1,
+                                "notif_link"=>"/pendinguser",
+                                "isRead"=>0
+                            );
+
+                            $isSuccessNotif = $this->Notification_Model->create($notif_data);
+                            if($isSuccessNotif){
+                                $this->res(1,null,"You Have Successfully Registered",0);
+                                move_uploaded_file($_FILES['profilePicture']['tmp_name'],"profiles/".$profile_picture);
+                            }else{
+                                $this->res(0,null,"Something went wrong",0);
+                            }
+                            
+                        }else{
+                            $this->res(0,null,"Something went wrong",0);
+                        }
+                        
+                      
+                    } 
+                    catch(Exception $e){
+                        $this->User_Model->deleteUser($newUser[0]->user_id);
+                        $this->res(0,null,"Something went wrong",0);
+                    }
+                }
+    
+            }          
+        }
