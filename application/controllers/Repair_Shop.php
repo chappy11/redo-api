@@ -11,6 +11,7 @@
 
         public function insert_post(){
             $user_id = $this->post('user_id');
+            $name = $this->post("name");
             $birPhoto = $_FILES['bir']['name'];
             $dtiPhoto = $_FILES['dti']['name'];
             $address = $this->post('address');
