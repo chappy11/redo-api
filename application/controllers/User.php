@@ -20,8 +20,7 @@
             $fullname = $data->fullname;
             $email = $data->email;
             $phoneNumber = $data->phone;
-            $password = $data->password;
-
+            $password =$data->password;
             $data = array(
                 "profilePic" => 'profiles/no_user.png',
                 "fullname" => $fullname,
@@ -42,7 +41,7 @@
 
         }
 
-        public function login_get(){
+        public function login_post(){
             $data= $this->decode();
 
             $email = $data->email;
@@ -52,11 +51,11 @@
 
             $noResp = count($resp);
             if($noResp > 0){
-                $this->res(1,$data,"Successfully Login",$noResp);
+                $this->res(1,$resp[0],"Successfully Login",$noResp);
             }else{
-                $this->res(0,null,"Something went wrong");
+                $this->res(0,null,"Invalid credentials",0);
             }
         }
     }
 
-?>
+?>  
