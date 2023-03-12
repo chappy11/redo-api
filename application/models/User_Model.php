@@ -24,7 +24,18 @@
             return $query->result();
         }
 
-    
+
+        public function update($data=array(),$user_id){
+            return $this->db->update($this->tbl,$data,"user_id=".$user_id);
+        }
+
+        public function user($user_id){
+            $this->db->select("*");
+            $this->db->from($this->tbl);
+            $this->db->where("user_id",$user_id);
+            $query = $this->db->get();
+            return $query->result();
+        }
     }
 
 ?>

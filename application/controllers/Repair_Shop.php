@@ -6,7 +6,7 @@
 
         public function __construct(){
             parent::__construct();
-            $this->load->mode(array("RepairShop_Model"));
+            $this->load->model(array("RepairShop_Model","User_Model"));
         }
 
         public function insert_post(){
@@ -19,8 +19,9 @@
 
             $arr = array(
                 "user_id" => $user_id,
-                "birPhoto" => "shop/".$birPhoto,
-                "dtiPhoto" => "shop/".$dtiPhoto,
+                "shop_name" => $name,
+                "birPhoto" => "shops/".$birPhoto,
+                "dtiPhoto" => "shops/".$dtiPhoto,
                 "shopAddress" => $address,
                 "shopIsActive" => $isActive
             );
@@ -28,9 +29,28 @@
             $resp = $this->RepairShop_Model->insert($arr);
 
             if($resp){
-                move_uploaded_file($_FILES['bir']['tmp_name'],"shop/".$birPhoto);
-                move_uploaded_file($_FILES['dti']['tmp_name'],"shop/".$dtiPhoto);
+                move_uploaded_file($_FILES['bir']['tmp_name'],"shops/".$birPhoto);
+                move_uploaded_file($_FILES['dti']['tmp_name'],"shops/".$dtiPhoto);
                 $this->res(1,null,"Successfully Insert",0);
+                $payload = array(
+                    "userRoles" => "repairer"
+                );
+
+                $isUpdate = $this->User_Model->update($payload,$user_id);
+
+                if($isUpdate){
+                    $responseUser = null;
+                    $userData = $this->User_Model->user($user_id)[0];
+                    $shopData = $this->RepairShop_Model->getShopDataByUserId($user_id)[0];
+                    
+                    $responseUser = (object)array_merge((array)$userData,(array)$shopData);
+
+                    $this->res(1,$responseUser,"Successfully Inserted",0);
+                }else{
+                    $this->res(0,null,"Something went wrong",0);
+                }
+
+
             }else{
                 $this->res(0,null,"Something went wrong",0);
             }            
