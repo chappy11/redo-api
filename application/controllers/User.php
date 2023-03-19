@@ -9,12 +9,7 @@
             
             $this->load->model(array("User_Model"));
         }
-        //note:
-        //user role:
-        //0 admin
-        //1 seller
-        //2 customer
-        
+
         public function register_post(){
             $data = $this->decode();
             $fullname = $data->fullname;
@@ -56,6 +51,17 @@
                 $this->res(0,null,"Invalid credentials",0);
             }
         }
+
+        public function userinfo_get($user_id){
+            $data = $this->User_Model->user($user_id);
+
+            if(count($data) > 0){
+                $this->res(1,$data[0    ],"data found",0);
+            }else{
+                $this->res(0,null,"data not found",0);
+            }
+        }
     }
 
 ?>  
+

@@ -39,6 +39,16 @@ require APPPATH.'libraries/REST_Controller.php';
         public function decode(){
             return json_decode(file_get_contents("php://input"));
         }
+
+        public function generateRefNo($type){
+            $no = $six_digit_random_number = random_int(100000, 999999);
+            $let = substr(md5(uniqid(mt_rand(), true)), 0, 4);
+            if($type === 'SALVAGE'){
+                return "SLV-"."".$let."".$no;
+            }else if($type === "REPUBRISHED"){
+                return "RBD-"."".$let."".$no;
+            }
+        }
   
         public function isMobile($number){
             return !preg_match("/^[0-9]{3}[0-9]{4}[0-9]{4}$/", $number);

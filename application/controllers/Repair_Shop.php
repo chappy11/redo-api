@@ -12,6 +12,7 @@
         public function insert_post(){
             $user_id = $this->post('user_id');
             $name = $this->post("name");
+            $pic = $_FILES['pic']['name'];
             $birPhoto = $_FILES['bir']['name'];
             $dtiPhoto = $_FILES['dti']['name'];
             $address = $this->post('address');
@@ -19,6 +20,7 @@
 
             $arr = array(
                 "user_id" => $user_id,
+                "shopImage" => $pic,
                 "shop_name" => $name,
                 "birPhoto" => "shops/".$birPhoto,
                 "dtiPhoto" => "shops/".$dtiPhoto,
@@ -31,7 +33,8 @@
             if($resp){
                 move_uploaded_file($_FILES['bir']['tmp_name'],"shops/".$birPhoto);
                 move_uploaded_file($_FILES['dti']['tmp_name'],"shops/".$dtiPhoto);
-                $this->res(1,null,"Successfully Insert",0);
+                move_uploaded_file($_FILES['pic']['tmp_name'],"shops/".$pic);
+
                 $payload = array(
                     "userRoles" => "repairer"
                 );

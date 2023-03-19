@@ -13,6 +13,10 @@
             return $this->db->insert($this->tbl_name,$payload);
         }
 
+        public function update($id,$payload){
+            return $this->db->update($this->tbl_name,$payload,"salvageItem_id=".$id);
+        }
+
         public function salvageItems(){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
