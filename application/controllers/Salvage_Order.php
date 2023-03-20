@@ -29,7 +29,7 @@
             $payload = array(
                 "salvageItem_id" => $item_id,
                 "ref_id" => $refNo,
-                "seller_id" => $user_id,
+                "buyer_id" => $user_id,
                 "salvageorder_status" => "PENDING",
                 "salvage_amount" => $amount,
                 "salvage_recievername" => $recieverName,

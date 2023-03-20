@@ -20,6 +20,7 @@
         public function salvageItems(){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
+            $this->db->where("isSold","0");
             $query = $this->db->get();
             return $query->result();
         }
