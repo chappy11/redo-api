@@ -7,7 +7,7 @@
     public function __construct(){
         parent::__construct();
         
-        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model"));
+        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model"));
     }
 
 
@@ -88,13 +88,14 @@
                     );
 
                     $updateSalvage = array("isSold"=> 1);
-
+                    
                     $this->SalvageItem_Model->update($orderData->salvageItem_id,$updateSalvage);  
 
                     $this->OrderSalvageItem_Model->updateAllPending($id,$updatePayload);
                 }
 
                 if($status === 'SUCCESS'){
+                    $salvageData = $this->SalvageItem_Model->getSalvageItemById($orderData->salvageItem_id)[0];
                     $repubrishPayload = array(
                         "reseller_id" => $orderData->buyer_id,
                         "salvageItem_id" => $orderData->salvageItem_id,
@@ -103,8 +104,16 @@
                         "repubrish_status" => "SALVAGE",
                         "repubrish_isSold" => 0,
                     );
-                
+            
                      $this->RepubrishItem_Model->insert($repubrishPayload);
+                    
+                     $ar = array(
+                        "salvageorder_id" => $id,
+                        "user_id" => $salvageData->user_id
+                     );
+
+                     $this->SellingTransactions_Model->insert($ar);
+
                 }
          
             }else{

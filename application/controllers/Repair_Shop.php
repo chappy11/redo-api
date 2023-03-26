@@ -20,7 +20,7 @@
 
             $arr = array(
                 "user_id" => $user_id,
-                "shopImage" => $pic,
+                "shopImage" => "shops/".$pic,
                 "shop_name" => $name,
                 "birPhoto" => "shops/".$birPhoto,
                 "dtiPhoto" => "shops/".$dtiPhoto,
@@ -60,7 +60,7 @@
         }
 
         public function shop_get($user_id){
-            $data = $this->ShopRepair_Model->getShopDataByUserId($user_id);
+            $data = $this->RepairShop_Model->getShopDataByUserId($user_id);
 
             if(count($data) > 0){
                 $this->res(1,$data,"Data found",count($data));

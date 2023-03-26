@@ -16,9 +16,18 @@
         public function getRepubrishByUserId($user_id){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
-            $this->db->where("repubrish_item.user_id",$user_id);
+            $this->db->where("repubrish_item.reseller_id",$user_id);
             $this->db->join("salvage_item","salvage_item.salvageItem_id = repubrish_item.salvageItem_id");
             $query = $this->db->get();
+            return $query->result();
+        }
+
+        public function getById($repubrishItem_id){
+            $this->db->select("*");
+            $this->db->from($this->tbl_name);
+            $this->db->where("repubrish_item.repubrishItem_id",$repubrishItem_id);
+            $this->db->join("salvage_item","salvage_item.salvageItem_id = repubrish_item.salvageItem_id");
+            $query =$this->db->get();
             return $query->result();
         }
     }

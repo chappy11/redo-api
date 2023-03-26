@@ -18,8 +18,8 @@
         public function login($email,$password){
             $this->db->select("*");
             $this->db->from($this->tbl);
-            $this->db->where("email",$email);
-            $this->db->where("password",$password);
+            $this->db->where("users.email",$email);
+            $this->db->where("users.password",$password);
             $query = $this->db->get();
             return $query->result();
         }
@@ -33,6 +33,23 @@
             $this->db->select("*");
             $this->db->from($this->tbl);
             $this->db->where("user_id",$user_id);
+            $query = $this->db->get();
+            return $query->result();
+        }
+
+        public function users(){
+            $this->db   ->select("*");
+            $this->db->from($this->tbl);
+            $this->db->where("userRoles !=",'admin');
+            $query = $this->db->get();
+            return $query->result();
+        }
+
+
+        public function getUserByStatus($status){
+            $this->db->select("*");
+            $this->db->from($this->tbl);
+            $this->db->where("status",$status);
             $query = $this->db->get();
             return $query->result();
         }
