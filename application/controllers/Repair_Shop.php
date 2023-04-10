@@ -36,7 +36,8 @@
                 move_uploaded_file($_FILES['pic']['tmp_name'],"shops/".$pic);
 
                 $payload = array(
-                    "userRoles" => "repairer"
+                    "userRoles" => "repairer",
+                    "isPending" => "1"
                 );
 
                 $isUpdate = $this->User_Model->update($payload,$user_id);

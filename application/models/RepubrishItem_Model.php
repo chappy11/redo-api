@@ -16,8 +16,7 @@
         public function getRepubrishByUserId($user_id){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
-            $this->db->where("repubrish_item.reseller_id",$user_id);
-            $this->db->join("salvage_item","salvage_item.salvageItem_id = repubrish_item.salvageItem_id");
+            $this->db->where("repubrish_item.user_id",$user_id);
             $query = $this->db->get();
             return $query->result();
         }
@@ -26,9 +25,30 @@
             $this->db->select("*");
             $this->db->from($this->tbl_name);
             $this->db->where("repubrish_item.repubrishItem_id",$repubrishItem_id);
-            $this->db->join("salvage_item","salvage_item.salvageItem_id = repubrish_item.salvageItem_id");
             $query =$this->db->get();
             return $query->result();
         }
+
+        public function getTheLatest(){
+            $this->db->select("*");
+            $this->db->from($this->tbl_name);
+            $this->db->order_by("repubrishItem_id",'DESC');
+            $this->db->limit(1);
+            $query = $this->db->get();
+            return $query->result();
+        }
+
+        public function update($id,$payload){
+            return $this->db->update($this->tbl_name,$payload,'repubrishItem_id='.$id);
+        }
+  
+        public function all(){
+            $this->db->select("*");
+            $this->db->from($this->tbl_name);
+            $this->db->where("risActive","1");
+            $query =$this->db->get();
+            return $query->result();
+        }
+  
     }
 ?>

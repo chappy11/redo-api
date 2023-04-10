@@ -7,7 +7,7 @@
     public function __construct(){
         parent::__construct();
         
-        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model"));
+        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model"));
     }
 
 
@@ -19,7 +19,7 @@
     public function insert_post(){
         $data = $this->decode();
         $user_id = $data->user_id;
-        $item_id = $data->salvageItem_id;
+        $seller_id = $data->seller_id;
         $amount = $data->amount;
         $recieverName = $data->recieverName;
         $address = $data->address;
@@ -27,12 +27,12 @@
         $refNo = $this->generateRefNo("SALVAGE");
         
             $payload = array(
-                "salvageItem_id" => $item_id,
                 "ref_id" => $refNo,
                 "buyer_id" => $user_id,
                 "salvageorder_status" => "PENDING",
-                "salvage_amount" => $amount,
+                "order_totalAmount" => $amount,
                 "salvage_recievername" => $recieverName,
+                "seller_id" => $seller_id,
                 "salvage_shippingAddress" => $address,
                 "salvage_recieverMobile" => $mobileNumber
             );
@@ -40,8 +40,19 @@
             $isOrderSuccess = $this->OrderSalvageItem_Model->insert($payload);
 
             if($isOrderSuccess){
-                
-                $this->res(1,null,"Successfully Ordered",0);
+                $latest = $this->OrderSalvageItem_Model->getLatest()[0];
+                $senderInfo = $this->User_Model->user($user_id)[0];
+                $recieverMobile = '09999999999';
+                $this->insertOrderItem($seller_id,$user_id,$latest->salvageorder_id);
+        
+
+                $ispayment = $this->createpayment($amount,$senderInfo->phoneNumber,$recieverMobile,$latest->ref_id,'salvage');
+                if($ispayment){
+                    $this->res(1,null,"Successfully Ordered",0);
+                }else{
+                    $this->res(0,null,"Something went wrong",0);
+                }
+              
                 
             }else{
                 $this->res(0,null,"Order Failed",0);
@@ -50,8 +61,23 @@
 
         public function transactions_get($user_id){
             $data = $this->OrderSalvageItem_Model->getAllTransactionByBuyerId($user_id);        
+            $arr = array();
             
-            $this->res(1,$data,"data found",count($data));
+            foreach ($data as  $value) {
+               $payload = array(
+                "salvageorder_id" => $value->salvageorder_id,
+                "ref_id" =>$value->ref_id,
+                "salvageorder_status" => $value->salvageorder_status,
+                "order_totalAmount" => $value->order_totalAmount,
+                "seller" => $value->fullname,
+                "no_items" => count($this->SalvageItemOrder_Model->getItems($value->salvageorder_id)),
+                "item" => $this->SalvageItemOrder_Model->getItems($value->salvageorder_id)[0]
+            );
+
+               array_push($arr,$payload);
+            }
+
+            $this->res(1,$arr,"data found",count($data));
         }
 
         public function transaction_get($salvageorder_id){
@@ -87,32 +113,36 @@
                         "salvageorder_status" => "CANCELED"
                     );
 
-                    $updateSalvage = array("isSold"=> 1);
-                    
-                    $this->SalvageItem_Model->update($orderData->salvageItem_id,$updateSalvage);  
 
                     $this->OrderSalvageItem_Model->updateAllPending($id,$updatePayload);
                 }
 
                 if($status === 'SUCCESS'){
-                    $salvageData = $this->SalvageItem_Model->getSalvageItemById($orderData->salvageItem_id)[0];
-                    $repubrishPayload = array(
-                        "reseller_id" => $orderData->buyer_id,
-                        "salvageItem_id" => $orderData->salvageItem_id,
-                        "resell"=> 0,
-                        "repubrish_price"=> 0,
-                        "repubrish_status" => "SALVAGE",
-                        "repubrish_isSold" => 0,
-                    );
-            
-                     $this->RepubrishItem_Model->insert($repubrishPayload);
+                    $orderItem = $this->SalvageItemOrder_Model->getItems($orderData->salvageorder_id);
                     
-                     $ar = array(
-                        "salvageorder_id" => $id,
-                        "user_id" => $salvageData->user_id
-                     );
-
-                     $this->SellingTransactions_Model->insert($ar);
+                    foreach ($orderItem as $item) {
+                    
+                        $repubrishPayload = array(
+                            "rpic1" => $item->pic1,
+                            "rpic2" => $item->pic2,
+                            "rpic3" => $item->pic3,
+                            "rdevice_name" => $item->deviceName,
+                            "rdevice_description" => $item->deviceDescription,
+                            "rsalvage_price" => $item->salvage_price,
+                            "rdevice_type" => $item->deviceType,
+                            "rdeviceBrand" => $item->deviceBrand,
+                             "rquantity" => $item->order_quantity,
+                            "risActive" => 0,
+                            "risSold" => 0,
+                            "selling_price" => $item->salvage_price,
+                            "user_id" => $orderData->buyer_id
+                         );
+                         $this->RepubrishItem_Model->insert($repubrishPayload);
+                     }
+                    
+                    $userData = $this->User_Model->user($orderData->seller_id)[0];
+                    $this->createpayment($orderData->order_totalAmount,'09999999999',$userData->phoneNumber,$orderData->ref_id,'salvage');
+                    $this->res(1,null,"Successfully Updated",0);
 
                 }
          
@@ -120,7 +150,64 @@
                 $this->res(0,null,"Something went wrong",0);
             }
         }
+
+        public function item_get($salvageorder_id){
+            $data = $this->SalvageItemOrder_Model->getItems($salvageorder_id);
         
+            $this->res(1,$data,'gg',0);
+        }
+
+        public function payment_get($ref_id){
+            $data = $this->Payment_Model->getSalvage($ref_id);
+        
+            $this->res(1,$data,'gg',0);
+        }
+//helper
+
+        public function createpayment($amount,$sender,$reciever,$transaction,$type){
+            $ref = rand(100000000,999999999);
+
+            $payload = array(
+                "paymentRefNo" => $ref,
+                "amount" => $amount,
+                "sender_mobileNumber" => $sender,
+                "reciever_mobileNumber" => $reciever,
+                "refubrish_ref" => $type === 'refubrish' ? $transaction : null,
+                'salvage_ref' => $type === 'salvage' ? $transaction : null
+            );
+            
+           return $this->Payment_Model->insert($payload);
+
+          
+        }
+   
+        public function insertOrderItem($seller_id,$buyer_id,$salvageorder_id){
+            $getActive = $this->SalvageCart_Model->getActive($seller_id,$buyer_id);
+            
+            foreach ($getActive as $item) {
+                $payload = array(
+                    "salvageorder_id" => $salvageorder_id,
+                    "salvageItem_id" => $item->salvageItem_id,
+                    "order_quantity" => $item->quantity
+                );
+
+                $this->SalvageItemOrder_Model->insert($payload);
+            }
+
+            foreach($getActive as $val){
+                $payload = array(
+                    "squantity" => (int)$val->squantity - (int)$val->quantity 
+                );
+
+                $this->SalvageItem_Model->update($val->salvageItem_id,$payload);
+            }
+
+            $this->SalvageCart_Model->removeActive($buyer_id,$seller_id);
+        
+        }
+
+    
+   
     }
 
 

@@ -79,6 +79,28 @@
             $this->res(1,$data,"data found",count($data));
         }
 
+
+        public function pending_get(){
+            $data =$this->User_Model->getpendingShop();
+
+            $this->res(1,$data,"data found",0);
+        }
+
+
+        public function approved_post($user_id){
+            $payload = array(
+                "isPending" => 0
+            );
+
+            $update = $this->User_Model->update($payload,$user_id);
+        
+        
+            if($update){
+                $this->res(1,null,"Successfully Approved",0);
+            }else{
+                $this->res(0,null,"something went wrong",0);
+            }
+        }
     }
 
 ?>  

@@ -53,6 +53,18 @@
             $query = $this->db->get();
             return $query->result();
         }
+
+        public function getpendingShop(){
+            $this->db->select("*");
+            $this->db->from($this->tbl);
+            $this->db->where("users.userRoles",'repairer');
+            $this->db->where("users.isPending","1");
+            $this->db->join("repair_shop","repair_shop.user_id=users.user_id");
+            $query = $this->db->get();
+            return $query->result();
+        }
+
+
     }
 
 ?>

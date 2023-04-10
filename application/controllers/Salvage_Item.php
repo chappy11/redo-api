@@ -18,6 +18,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
         $purchasePrice = $this->post("purchasePrice");
         $numberOfYears = $this->post("numberOfYears");
         $salvageLevel = $this->post("salvageLevel");
+        $quantity = $this->post('quantity');
         $price = $this->post("price");
         $pic1 = $_FILES['pic1']['name'];
         $pic2 = $_FILES['pic2']['name'];
@@ -36,6 +37,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
             "deviceDescription" => $description,
             "salvage_price" => $price,
             "deviceType" => $type,
+            "squantity" => $quantity,
             "deviceBrand" => $brand,
             "isActive" => 1,
             "isSold" => 0
