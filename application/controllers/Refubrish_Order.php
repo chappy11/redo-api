@@ -16,6 +16,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
             $amount = $data->amount;
             $recieverName = $data->recieverName;
             $address = $data->address;
+            $courier = $data->courier;
             $mobileNumber = $data->mobile;
             $refNo = $this->generateRefNo("REPUBRISHED");
 
@@ -27,7 +28,9 @@ include_once(dirname(__FILE__)."/Data_format.php");
                 'r_shippingAddress' => $address,
                 'r_mobileNumber' => $mobileNumber,
                 'buyer_id' => $user_id,
-                'seller_id' => $seller_id
+                'seller_id' => $seller_id,
+                'courier'=>$courier,
+                "courierRef"=>""
             );
 
 
@@ -54,32 +57,75 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
         public function sales_get($user_id){
             $data = $this->RefubrishOrder_Model->getOrderBySeller($user_id);
+            $temp = array();
+            
+            foreach ($data as  $value) {
+                $paylaod = array(
+                    "refubrishorder_id" => $value->refubrishorder_id,
+                    "ref_id" => $value->ref_id,
+                    'refubrishorder_status' => $value->refubrishorder_status,
+                    'total_amount' => $value->total_amount,
+                    'seller' => $value->fullname,
+                    'no_items' => count($this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)),
+                    'item' => $this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)[0]
+                );
+                
+                array_push($temp,$paylaod);
 
-            $this->res(1,$data,'',0);
+            }
+            $this->res(1,$temp,'',0);
         }
 
         public function transactions_get($user_id){
             $data = $this->RefubrishOrder_Model->getOrderByBuyerId($user_id);
+            $temp = array();
+            
+            foreach ($data as  $value) {
+                $paylaod = array(
+                    "refubrishorder_id" => $value->refubrishorder_id,
+                    "ref_id" => $value->ref_id,
+                    'refubrishorder_status' => $value->refubrishorder_status,
+                    'total_amount' => $value->total_amount,
+                    'seller' => $value->fullname,
+                    'no_items' => count($this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)),
+                    'item' => $this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)[0]
+                );
+                
+                array_push($temp,$paylaod);
 
-            $this->res(1,$data,'',0);
+            }
+            $this->res(1,$temp,'',0);
+        }
+
+        public function transaction_get($id){
+            $data = $this->RefubrishOrder_Model->getTransactionById($id)[0];
+            $this->res(1,$data,"",0);
         }
 
         public function updatestatus_post(){
-            $data - $this->decode();
+            $data = $this->decode();
             $id = $data->id;
             $status = $data->status;
-
-            $updatepayload = array(
-                "refubrishorder_status" => $status
-            );
-
+            $courierRef = $data->courierRef  ? $data->courierRef : '';
+            $updatepayload = array();
+            
+            if($status === 'DELIVERED'){
+              $updatepayload =  array(
+                    "refubrishorder_status" => $status,
+                    'courierRef' => $courierRef
+                );
+    
+            }else{
+                $updatepayload = array( "refubrishorder_status" => $status);
+            }
+           
             $isUpdate = $this->RefubrishOrder_Model->update($id,$updatepayload);
             $orderData = $this->RefubrishOrder_Model->getTransactionById($id);
 
             if($isUpdate){
                 if($status === 'SUCCESS'){
-                    $userData = $this->User_Model->user($orderData->seller_id)[0];
-                    $ispayment = $this->createpayment($orderData->order_totalAmount,'09999999999',$userData->phoneNumber,$orderData->ref_id,'refubrish');   
+                    $userData = $this->User_Model->user($orderData[0]->seller_id)[0];
+                    $ispayment = $this->createpayment($orderData[0]->total_amount,'09999999999',$userData->phoneNumber,$orderData[0]->ref_id,'refubrish');   
                 
                     if($ispayment){
                         $this->res(1,null,"Successfully Updated",0);

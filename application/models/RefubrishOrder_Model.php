@@ -46,7 +46,7 @@
             $this->db->select("*");
             $this->db->from($this->tbl_name);
             $this->db->where("refubrish_order.refubrishorder_id",$id);
-            $this->db->join("users","users.user_id=refubrish_order.seller");
+            $this->db->join("users","users.user_id=refubrish_order.seller_id");
             $query = $this->db->get();
             return $query->result();
             

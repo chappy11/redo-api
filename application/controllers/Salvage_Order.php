@@ -16,7 +16,7 @@
     }
 
     
-    public function insert_post(){
+      public function insert_post(){
         $data = $this->decode();
         $user_id = $data->user_id;
         $seller_id = $data->seller_id;
@@ -24,6 +24,7 @@
         $recieverName = $data->recieverName;
         $address = $data->address;
         $mobileNumber = $data->mobile;
+        $courier = $data->courier;
         $refNo = $this->generateRefNo("SALVAGE");
         
             $payload = array(
@@ -34,7 +35,9 @@
                 "salvage_recievername" => $recieverName,
                 "seller_id" => $seller_id,
                 "salvage_shippingAddress" => $address,
-                "salvage_recieverMobile" => $mobileNumber
+                "salvage_recieverMobile" => $mobileNumber,
+                "courier" => $courier,
+                "courierRef" => ''
             );
 
             $isOrderSuccess = $this->OrderSalvageItem_Model->insert($payload);

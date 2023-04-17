@@ -25,7 +25,7 @@
         public function getRefubrish($refubrish_ref){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
-            $this->db->where("refubrish",$refubrish_ref);
+            $this->db->where("refubrish_ref",$refubrish_ref);
             $query =$this->db->get();
             return $query->result();
         }
