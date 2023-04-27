@@ -72,6 +72,59 @@ class RepubrishItem extends Data_format{
             $this->res(1,$data,"data found",count($data));
         }
   
+
+        public function update_post(){
+            $id = $this->post('id');
+            $pic2 = isset($_FILES['pic2']['name']) ? $_FILES['pic2']['name'] : "";
+            $pic3 = isset($_FILES['pic3']['name']) ? $_FILES['pic3']['name'] : "";
+            $quantity = $this->post('quantity');
+            $rdevice_description = $this->post("details");
+            $data = $this->RepubrishItem_Model->getById($id)[0];
+            $hasImage1 = $data->rpic2 === "" ? "" : $data->rpic2;
+            $hasImage2 = $data->rpic3 === "" ? "" : $data->rpic3;
+
+            $image2 = isset($_FILES['pic2']['name']) ? "products/".$pic2 : $hasImage1;
+            $image3 = isset($_FILES['pic3']['name']) ? "products/".$pic3 : $hasImage2;
+
+            $payload = array(
+                "rpic2" => $image2,
+                "rpic3" => $image3,
+                "rquantity" => $quantity,
+                "rdevice_description" => $rdevice_description
+            );
+
+            $isUpdate = $this->RepubrishItem_Model->update($id,$payload);
+       
+            if($isUpdate){
+                if(isset($_FILES['pic2']['name'])){
+                    move_uploaded_file($_FILES['pic2']['tmp_name'],"products/".$pic2);       
+                }
+
+                if(isset($_FILES['pic3']['name'])){
+                    move_uploaded_file($_FILES['pic3']['tmp_name'],"products/".$pic3);       
+                }
+                
+                $this->res(1,null,"Succesfully Updated",0);
+            }else{
+                $this->res(0,null,"SOmething went wrong",0);
+            }
+        }
+
+
+        public function remove_get($id){
+            $payload = array(
+                "isDeleted" => 1
+            );
+
+            $isUpdate = $this->RepubrishItem_Model->update($id,$payload);
+       
+            if($isUpdate){
+
+                $this->res(1,null,"Succesfully Removed",0);
+            }else{
+                $this->res(0,null,"SOmething went wrong",0);
+            }
+        }
     }
 
 ?>

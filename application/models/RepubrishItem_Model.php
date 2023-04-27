@@ -16,6 +16,7 @@
         public function getRepubrishByUserId($user_id){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
+            $this->db->where("isDeleted",0);
             $this->db->where("repubrish_item.user_id",$user_id);
             $query = $this->db->get();
             return $query->result();

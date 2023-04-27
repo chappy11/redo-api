@@ -143,6 +143,17 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
             $this->res(1,$data,"data found",0);
         }
+
+        public function remove_get($cart_id){
+            $isSuccess = $this->SalvageCart_Model->remove($cart_id);
+
+            if($isSuccess){
+                $this->res(1,null,"Successfully Remove",0);
+            }else{
+                $this->res(0,null,"Error Remove",0);
+            }
+            
+        }
     }
 
 ?>
