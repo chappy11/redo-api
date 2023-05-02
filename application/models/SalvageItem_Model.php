@@ -30,6 +30,7 @@
             $this->db->select("*");
             $this->db->from($this->tbl_name);
             $this->db->where("user_id",$user_id);
+            $this->db->where("isDeleted",0);
             $this->db->order_by("salvageItem_created",'DESC');
             $query = $this->db->get();
             return $query->result();

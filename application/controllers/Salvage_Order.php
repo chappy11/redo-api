@@ -101,6 +101,12 @@
             $this->res(1,$data,"Data found",0);
         }
 
+        public function successtransactions_get($user_id){
+            $data = $this->OrderSalvageItem_Model->getSuccessTransactions($user_id);
+
+            $this->res(1,$data,"Data found",0);
+        }
+
         public function updatestatus_post(){
             $data = $this->decode();
             $id = $data->id;
@@ -116,7 +122,7 @@
                         "salvageorder_status" => "CANCELED"
                     );
 
-
+  
                     $this->OrderSalvageItem_Model->updateAllPending($id,$updatePayload);
                 }
 

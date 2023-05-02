@@ -46,7 +46,9 @@
         public function all(){
             $this->db->select("*");
             $this->db->from($this->tbl_name);
-            $this->db->where("risActive","1");
+            $this->db->where("isDeleted","0");
+            $this->db->where("rquantity >",0);
+            $this->db->where("risActive",1);
             $query =$this->db->get();
             return $query->result();
         }

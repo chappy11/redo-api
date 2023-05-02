@@ -191,5 +191,26 @@ include_once(dirname(__FILE__)."/Data_format.php");
         
         }
 
+        public function success_get($user_id){
+            $data = $this->RefubrishOrder_Model->getAllSuccess($user_id);
+            $temp = array();
+            
+            foreach ($data as  $value) {
+                $paylaod = array(
+                    "refubrishorder_id" => $value->refubrishorder_id,
+                    "ref_id" => $value->ref_id,
+                    'refubrishorder_status' => $value->refubrishorder_status,
+                    'total_amount' => $value->total_amount,
+                    'seller' => $value->fullname,
+                    'no_items' => count($this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)),
+                    'item' => $this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)[0]
+                );
+                
+                array_push($temp,$paylaod);
+
+            }
+            $this->res(1,$temp,'',0);
+        }
+
     }
 ?>

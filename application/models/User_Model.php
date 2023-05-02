@@ -64,6 +64,13 @@
             return $query->result();
         }
 
+        public function getUserByEmail($email){
+            $this->db->select("*");
+            $this->db->from($this->tbl);
+            $this->db->where("email",$email);
+            $query = $this->db->get();
+            return $query->result();
+        }
 
     }
 

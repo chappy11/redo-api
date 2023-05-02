@@ -14,26 +14,36 @@
             $data = $this->decode();
             $fullname = $data->fullname;
             $email = $data->email;
+            $address = $data->address;
             $phoneNumber = $data->phone;
             $password =$data->password;
-            $data = array(
-                "profilePic" => 'profiles/no_user.png',
-                "fullname" => $fullname,
-                "email" => $email,
-                "password" => $password,
-                "phoneNumber" => $phoneNumber,
-                "userRoles" => "user",
-                "status" => 1
-            );
 
-            $response = $this->User_Model->create($data);
+            $getEmail =  $this->User_Model->getUserByEmail($email);
 
-            if($response){
-                $this->res(1,null,"Successfully Login",0);
+            if(count($getEmail) > 0){
+                $this->res(0,null,"This Email is Already Exist",0);
             }else{
-                $this->res(0,null,"Something went wrong",0);
+                $data = array(
+                    "profilePic" => 'profiles/no_user.png',
+                    "fullname" => $fullname,
+                    "email" => $email,
+                    "password" => $password,
+                    "address" => $address,
+                    "phoneNumber" => $phoneNumber,
+                    "userRoles" => "user",
+                    "status" => 1
+                );
+    
+                $response = $this->User_Model->create($data);
+    
+                if($response){
+                    $this->res(1,null,"Successfully Registered",0);
+                }else{
+                    $this->res(0,null,"Something went wrong",0);
+                }
+    
             }
-
+            
         }
 
         public function login_post(){
@@ -99,6 +109,77 @@
                 $this->res(1,null,"Successfully Approved",0);
             }else{
                 $this->res(0,null,"something went wrong",0);
+            }
+        }
+
+        public function changepass_post(){
+            $data = $this->decode();
+
+            $email = $data->email;
+            $password = $data->password;
+
+            $userData = $this->User_Model->getUserByEmail($email)[0];
+
+            $payload = array("password"=> $password);
+
+            $isUpdated = $this->User_Model->update($payload,$userData->user_id);
+       
+            if($isUpdated){
+                $this->res(1,null,"Successfully Updated",0);
+            }else{
+                $this->res(0,null,"Something went wrong",0);
+            }
+       
+        }
+
+        public function updateuser_post(){
+              $user_id = $this->post("user_id");
+              $image = isset($_FILES['pic']['name']) ? $_FILES['pic']['name'] : ""; 
+              $fullname = $this->post("fullname");
+              $address = $this->post("address");  
+
+              $userInfo = $this->User_Model->user($user_id)[0];
+              
+              $imageData =  isset($_FILES['pic']['name']) ? 'profiles/'.$image : $userInfo->profilePic;
+              $fullnameData = $fullname === "" ? $userInfo->fullname: $fullname;
+              $addressData = $address === "" ? $userInfo->address : $address;
+
+
+              $payload = array(
+                "profilePic" => $imageData,
+                "fullname" => $fullnameData,
+                "address" =>$addressData
+              );
+
+              $isUpdated = $this->User_Model->update($payload,$user_id);
+        
+              if($isUpdated){
+                if(isset($_FILES['pic']['name'])){
+                    move_uploaded_file($_FILES['pic']['tmp_name'],"profiles/".$image);
+                }
+                $user = $this->User_Model->login($userInfo->email,$userInfo->password)[0];
+
+
+                $this->res(1,$user,"Successfully Updated",0);
+              }else{
+                $this->res(0,null,"Something went wrong",0);
+              }      
+        }
+
+        public function updatestatus_post(){
+            $data = $this->decode();
+
+            $user_id = $data->user_id;
+            $status = $data->status;
+
+            $payload = array("status"=>$status);
+
+            $isUpdated = $this->User_Model->update($payload,$user_id);
+
+            if($isUpdated){
+                $this->res(1,null,"Successfully Updated",0);
+            }else{
+                $this->res(0,null,"Something went wrong",0);
             }
         }
     }
