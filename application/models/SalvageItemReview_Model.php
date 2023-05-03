@@ -17,7 +17,7 @@
             $this->db->from($this->tbl_name);
             $this->db->where('salvageitem_review.salvageitem_id',$id);
             $this->db->join("users","users.user_id=salvageitem_review.user_id");
-            $this->db->order_by("dateCreated","DESC");
+            $this->db->order_by("salvageitem_review.dateCreated","DESC");
             $query = $this->db->get();
             return $query->result();
         }
