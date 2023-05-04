@@ -7,7 +7,7 @@
     public function __construct(){
         parent::__construct();
         
-        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model"));
+        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model","RefubrishCart_Model"));
     }
 
 
@@ -171,6 +171,17 @@
         
             $this->res(1,$data,'gg',0);
         }
+
+        public function cartitems_get($user_id,$type){
+            $data = [];
+            if($type === 'Ref'){
+                $data = $this->SalvageCart_Model->getbybuyer($user_id);
+            }else if($type === 'Sal'){
+                $data = $this->RefubrishCart_Model->getCart($user_id);
+            }
+
+            $this->res(1,$data,"GG",count($data));
+        }
 //helper
 
         public function createpayment($amount,$sender,$reciever,$transaction,$type){
@@ -215,8 +226,9 @@
         
         }
 
+      
     
-   
+        
     }
 
 
