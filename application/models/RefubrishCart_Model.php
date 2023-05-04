@@ -61,5 +61,9 @@
         public function removeActive($user_id,$seller_id){
             return $this->db->delete($this->tbl_name,array('user_id'=>$user_id,'seller_id'=>$seller_id));
         }
+
+        public function remove($cart_id){
+            return $this->db->delete($this->tbl_name,array('rcart_id='.$cart_id));
+        }
     }
 ?>

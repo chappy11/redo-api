@@ -140,6 +140,16 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
             $this->res(1,$data,"Data found",count($data));
         }
+
+        public function remove_get($cart_id){
+            $isDeleted = $this->RefubrishCart_Model->remove($cart_id);
+
+            if($isDeleted){
+                $this->res(1,null,"Successfully Remove",0);
+            }else{
+                $this->res(0,null,"Something went wrong",0);
+            }
+        }
     }
 
 
