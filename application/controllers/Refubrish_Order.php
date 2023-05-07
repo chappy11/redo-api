@@ -212,5 +212,11 @@ include_once(dirname(__FILE__)."/Data_format.php");
             $this->res(1,$temp,'',0);
         }
 
+        public function allsuccess_get(){
+            $data =  $data = $this->RefubrishOrder_Model->getSuccess();
+
+            $this->res(1,$data,'',count($data));
+        }
+
     }
 ?>

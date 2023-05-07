@@ -182,6 +182,12 @@
 
             $this->res(1,$data,"GG",count($data));
         }
+
+        public function allsuccess_get(){
+            $data = $this->OrderSalvageItem_Model->getAllSuccess();
+
+            $this->res(1,$data,"GG",count($data));
+        }
 //helper
 
         public function createpayment($amount,$sender,$reciever,$transaction,$type){

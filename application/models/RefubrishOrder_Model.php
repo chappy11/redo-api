@@ -78,6 +78,15 @@
             return $query->result();
         }
 
+        public function getSuccess(){
+            $this->db->select("*");
+            $this->db->from($this->tbl_name);
+            $this->db->where("refubrish_order.refubrishorder_status","SUCCESS");
+            $this->db->join("users","users.user_id=refubrish_order.seller_id");
+            $this->db->order_by("r_order_date","DESC"); 
+            $query = $this->db->get();
+            return $query->result();
+        }
      
   
     }

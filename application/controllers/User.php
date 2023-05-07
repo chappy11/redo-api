@@ -183,7 +183,11 @@
             }
         }
 
-       
+        public function getusershop_get($user_id){
+            $data = $this->User_Model->getUserByShop($user_id);
+
+            $this->res(1,$data[0],"data found",0);
+        }
 
     }
 

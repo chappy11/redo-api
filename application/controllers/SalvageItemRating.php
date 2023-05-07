@@ -10,7 +10,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
             $this->load->model(array("SalvageItemRating_Model"));
         }
 
-        public function insert(){
+        public function insert_post(){
             $data = $this->decode();
             $user_id = $data->user_id;
             $salvageItem_id = $data->salvageItem_id;
@@ -33,7 +33,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
         public function rating_get($salvageItem_id){
             $rate =  $this->SalvageItemRating_Model->getAverage($salvageItem_id);
 
-            $this->res(1,$rate,"gg",0);
+            $this->res(1,$rate[0],"gg",0);
         }
     }
 ?>

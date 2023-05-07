@@ -78,6 +78,16 @@
             $query =$this->db->get();
             return $query->result();
         }
-  
+
+        
+        public function getAllSuccess(){
+            $this->db->select("*");
+            $this->db->from($this->tbl_name);
+            $this->db->where("order_salvageitem.salvageorder_status","SUCCESS");
+            $this->db->join("users","users.user_id=order_salvageitem.seller_id");
+            $this->db->order_by("order_salvageItem.salvageOrder_date","DESC");
+            $query = $this->db->get();
+            return $query->result();
+        }
     }
 ?>

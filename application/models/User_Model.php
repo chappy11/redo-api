@@ -72,6 +72,14 @@
             return $query->result();
         }
 
+        public function getUserByShop($user_id){
+            $this->db->select("*");
+            $this->db->from($this->tbl);
+            $this->db->where("users.user_id",$user_id);
+            $this->db->join("repair_shop","repair_shop.user_id=users.user_id");
+            $query = $this->db->get();
+            return $query->result();
+        }
     }
 
 ?>
