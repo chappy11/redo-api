@@ -60,7 +60,7 @@
         }
 
         public function remove($cart_id){
-            return $this->db->delete($this->tbl_name,array('salvagecart_id='.$cart_id));
+            return $this->db->delete($this->tbl_name,array('salvagecart_id'=>$cart_id));
         }
 
         public function removeActive($buyer_id,$seller_id){

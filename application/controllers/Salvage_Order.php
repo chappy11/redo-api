@@ -7,7 +7,7 @@
     public function __construct(){
         parent::__construct();
         
-        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model","RefubrishCart_Model"));
+        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model","RefubrishCart_Model",'Notification_Model'));
     }
 
 
@@ -51,6 +51,7 @@
 
                 $ispayment = $this->createpayment($amount,$senderInfo->phoneNumber,$recieverMobile,$latest->ref_id,'salvage');
                 if($ispayment){
+                    $this->createOrderNotification($user_id,$seller_id);
                     $this->res(1,null,"Successfully Ordered",0);
                 }else{
                     $this->res(0,null,"Something went wrong",0);
@@ -232,7 +233,39 @@
         
         }
 
-      
+        public function createOrderNotification($user_id,$seller_id){
+            $userData = $this->User_Model->user($user_id)[0];
+            $header = 'You have new order!!';
+            $body = $userData->fullname." create new order";
+
+            $payload = array(
+                "reciver_id" => $seller_id,
+                'header' => $header,
+                'body' => $body,
+                'isRead' => 0,
+            );
+        
+           $this->Notification_Model->createNotif($payload);
+        }
+
+        public function updateOrderStatusNotification($user_id,$type){
+            $userData = $this->User_Model->user($user_id)[0];
+            $header = '';
+            $body = '';
+
+            if($type === 'SUCCESS'){
+                $header = 'Your';
+            }
+
+            $payload = array(
+                "reciver_id" => $seller_id,
+                'header' => $header,
+                'body' => $body,
+                'isRead' => 0,
+            );
+        
+           $this->Notification_Model->createNotif($payload);
+        }
     
         
     }

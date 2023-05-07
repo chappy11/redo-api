@@ -63,7 +63,7 @@
         }
 
         public function remove($cart_id){
-            return $this->db->delete($this->tbl_name,array('rcart_id='.$cart_id));
+            return $this->db->delete($this->tbl_name,array('rcart_id'=>$cart_id));
         }
     }
 ?>
