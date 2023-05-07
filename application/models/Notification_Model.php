@@ -17,6 +17,8 @@
             $this->db->from($this->tbl_name);
             $this->db->where('reciever_id',$user_id);
             $this->db->order_by('date','DESC');
+            $query = $this->db->get();
+            return $query->result();
         }
     }
 

@@ -6,7 +6,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
         public function __construct(){
             parent::__construct();
-            $this->load->model(array('RefubrishOrder_Model','RefubrishOrderItem_Model','RefubrishCart_Model',"Payment_Model","User_Model","RepubrishItem_Model"));
+            $this->load->model(array('RefubrishOrder_Model','RefubrishOrderItem_Model','RefubrishCart_Model',"Payment_Model","User_Model","RepubrishItem_Model","Notification_Model"));
         }
 
         public function insert_post(){
@@ -44,6 +44,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
                 $isPaymentCreated = $this->createpayment($amount,$senderInfo->phoneNumber,$recieverNo,$latest->ref_id,'refubrish');
                 
                 if($isPaymentCreated){
+                    $this->createOrderNotification($user_id,$seller_id);
                     $this->res(1,null,"Succesfully Ordered",0);
                 }else{
                     $this->res(0,null,"Something went wrong",0);
@@ -123,6 +124,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
             $orderData = $this->RefubrishOrder_Model->getTransactionById($id);
 
             if($isUpdate){
+                $this->updateOrderStatusNotification($orderData[0]->buyer_id,$status);
                 if($status === 'SUCCESS'){
                     $userData = $this->User_Model->user($orderData[0]->seller_id)[0];
                     $ispayment = $this->createpayment($orderData[0]->total_amount,'09999999999',$userData->phoneNumber,$orderData[0]->ref_id,'refubrish');   
@@ -217,6 +219,48 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
             $this->res(1,$data,'',count($data));
         }
+
+        public function createOrderNotification($user_id,$seller_id){
+            $userData = $this->User_Model->user($user_id)[0];
+            $header = 'You have new order!!';
+            $body = $userData->fullname." create new order";
+
+            $payload = array(
+                "reciever_id" => $seller_id,
+                'header' => $header,
+                'body' => $body,
+                'isRead' => 0,
+            );
+        
+           $this->Notification_Model->createNotif($payload);
+        }
+
+        public function updateOrderStatusNotification($user_id,$type){
+            $userData = $this->User_Model->user($user_id)[0];
+            $header = '';
+            $body = '';
+
+            if($type === 'SUCCESS'){
+                $header = 'Your order is successfully delivered';
+                $body = 'Your has been successfully delivered';
+            }else if($type === 'ACCEPTED'){
+                $header = 'Your order is successfully accepted';
+                $body = 'Your has been successfully accepted';
+            }else if($type === 'DELIVERED'){
+                $header = 'Your order is successfully delivered';
+                $body = 'Your has been successfully accepted';
+            }
+
+            $payload = array(
+                "reciever_id" => $user_id,
+                'header' => $header,
+                'body' => $body,
+                'isRead' => 0,
+            );
+        
+           $this->Notification_Model->createNotif($payload);
+        }
+
 
     }
 ?>

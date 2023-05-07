@@ -148,10 +148,11 @@
                             "user_id" => $orderData->buyer_id
                          );
                          $this->RepubrishItem_Model->insert($repubrishPayload);
-                     }
+                    }
                     
                     $userData = $this->User_Model->user($orderData->seller_id)[0];
                     $this->createpayment($orderData->order_totalAmount,'09999999999',$userData->phoneNumber,$orderData->ref_id,'salvage');
+                    $this->updateOrderStatusNotification($orderData->buyer_id,$status);
                     $this->res(1,null,"Successfully Updated",0);
 
                 }
@@ -239,7 +240,7 @@
             $body = $userData->fullname." create new order";
 
             $payload = array(
-                "reciver_id" => $seller_id,
+                "reciever_id" => $seller_id,
                 'header' => $header,
                 'body' => $body,
                 'isRead' => 0,
@@ -254,11 +255,18 @@
             $body = '';
 
             if($type === 'SUCCESS'){
-                $header = 'Your';
+                $header = 'Your order is successfully delivered';
+                $body = 'Your has been successfully delivered';
+            }else if($type === 'ACCEPTED'){
+                $header = 'Your order is successfully accepted';
+                $body = 'Your has been successfully accepted';
+            }else if($type === 'DELIVERED'){
+                $header = 'Your order is is on delivered';
+                $body = 'Your has been successfully accepted';
             }
 
             $payload = array(
-                "reciver_id" => $seller_id,
+                "reciever_id" => $user_id,
                 'header' => $header,
                 'body' => $body,
                 'isRead' => 0,
