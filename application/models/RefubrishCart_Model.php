@@ -65,5 +65,9 @@
         public function remove($cart_id){
             return $this->db->delete($this->tbl_name,array('rcart_id'=>$cart_id));
         }
+
+        public function removeByRefurbrishItem($refurbrishItem_id){
+            return $this->db->delete($this->tbl_name,array('repubrishItem_id'=>$refurbrishItem_id));
+        }
     }
 ?>

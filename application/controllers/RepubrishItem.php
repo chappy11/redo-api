@@ -5,7 +5,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
 class RepubrishItem extends Data_format{
         public function __construct(){
             parent::__construct();
-            $this->load->model(array("RepubrishItem_Model"));
+            $this->load->model(array("RepubrishItem_Model",'RefubrishCart_Model'));
         }
 
         public function add_post(){
@@ -119,7 +119,7 @@ class RepubrishItem extends Data_format{
             $isUpdate = $this->RepubrishItem_Model->update($id,$payload);
        
             if($isUpdate){
-
+                $this->RefubrishCart_Model->removeByRefurbrishItem($id);
                 $this->res(1,null,"Succesfully Removed",0);
             }else{
                 $this->res(0,null,"SOmething went wrong",0);

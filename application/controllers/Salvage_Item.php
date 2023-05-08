@@ -6,7 +6,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
     public function __construct(){
         parent::__construct();
-        $this->load->model(array("SalvageItem_Model"));
+        $this->load->model(array("SalvageItem_Model","SalvageCart_Model"));
     }
 
     public function samp_post(){
@@ -144,6 +144,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
         $resp = $this->SalvageItem_Model->update($id,$payload);
 
         if($resp){
+            $this->SalvageCart_Model->removeBySalvageItem($id);
             $this->res(1,null,"Successfully Updated",0);
         }else{
             $this->res(0,null,"Something went wrong",0);

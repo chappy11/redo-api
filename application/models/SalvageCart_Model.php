@@ -66,6 +66,11 @@
         public function removeActive($buyer_id,$seller_id){
             return $this->db->delete($this->tbl_name,array("sbuyer_id"=>$buyer_id,"seller_id"=>$seller_id));
         }
+
+
+        public function removeBySalvageItem($salvageitem_id){
+            return $this->db->delete($this->tbl_name,array('salvageItem_id'=>$salvageItem_id));
+        }
     }
 
 ?>
