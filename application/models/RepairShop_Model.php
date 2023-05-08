@@ -21,6 +21,11 @@
             $query = $this->db->get();
             return $query->result();
         }
+
+        public function deleteShop($user_id){
+            return $this->db->delete($this->table,array("user_id"=>$user_id));
+
+        }
     }
 
 ?>

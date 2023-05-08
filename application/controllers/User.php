@@ -7,7 +7,7 @@
         public function __construct(){
             parent::__construct();
             
-            $this->load->model(array("User_Model","RepairShop_Model"));
+            $this->load->model(array("User_Model","RepairShop_Model","Notification_Model"));
         }
 
         public function register_post(){
@@ -192,6 +192,35 @@
             $data = $this->User_Model->getUserByShop($user_id);
 
             $this->res(1,$data[0],"data found",0);
+        }
+
+        public function decline_post($user_id){
+            $payload = array(
+                "userRoles" => 'user',
+                'isPending' => 0
+            );
+
+            $isUpdate = $this->User_Model->update($payload,$user_id);
+
+            if($isUpdate){
+                $header = "Repair Shop Application Declined";
+                $body = 'Your application for repairer has been declined by the admin.';
+
+                $notif = array(
+                    "reciever_id" => $user_id,
+                    "header" => $header,
+                    "body" => $body,
+                    "isRead" => 0
+                );
+
+                $this->Notification_Model->createNotif($notif);
+             
+                $this->RepairShop_Model->deleteShop($user_id);
+
+                $this->res(1,null,"Successfully Declined",0);
+            }else{
+                $this->res(0,null,"Something went wrong",0);
+            }
         }
 
     }
