@@ -57,8 +57,13 @@
 
             $noResp = count($resp);
             if($noResp > 0){
+                if($resp[0]->status < 1){
+                    $this->res(0,null,"Your Account is currently inactive, Please contact this email teamredoers@gmail.com",0);
+                }else{
+                    $this->res(1,$resp[0],"Successfully Login",$noResp);
+                }
 
-                $this->res(1,$resp[0],"Successfully Login",$noResp);
+              
             }else{
                 $this->res(0,null,"Invalid credentials",0);
             }
