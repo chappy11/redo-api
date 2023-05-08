@@ -60,6 +60,13 @@
                 if($resp[0]->status < 1){
                     $this->res(0,null,"Your Account is currently inactive, Please contact this email teamredoers@gmail.com",0);
                 }else{
+                    if($resp[0]->userRoles === 'repairer'){
+                        $dat = $this->User_Model->getUserData($resp[0]->user_id);
+                        $this->res(1,$dat,"Successfully Login",0);
+                    }else{
+                        $this->res(1,$resp[0],"Successfully Login",$noResp);
+                    }
+                    
                     $this->res(1,$resp[0],"Successfully Login",$noResp);
                 }
 

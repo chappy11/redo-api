@@ -112,6 +112,7 @@
             $data = $this->decode();
             $id = $data->id;
             $status = $data->status;
+            $courierRef = $data->courierRef  ? $data->courierRef : '';
             $payload = array(
                 "salvageorder_status" => $status
             );
@@ -125,6 +126,14 @@
 
   
                     $this->OrderSalvageItem_Model->updateAllPending($id,$updatePayload);
+                }
+
+                if($status === 'DELIVERED'){
+                    $ggpayload = array(
+                        'courierRef' => $courierRef
+                    );
+
+                     $this->OrderSalvageItem_Model->update($ggpayload,$id);
                 }
 
                 if($status === 'SUCCESS'){
