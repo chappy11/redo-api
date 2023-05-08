@@ -69,7 +69,7 @@
 
 
         public function removeBySalvageItem($salvageitem_id){
-            return $this->db->delete($this->tbl_name,array('salvageItem_id'=>$salvageItem_id));
+            return $this->db->delete($this->tbl_name,array('salvageItem_id'=>$salvageitem_id));
         }
     }
 
