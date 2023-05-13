@@ -7,7 +7,7 @@
     public function __construct(){
         parent::__construct();
         
-        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model","RefubrishCart_Model",'Notification_Model'));
+        $this->load->model(array("OrderSalvageItem_Model","RepubrishItem_Model","SalvageItem_Model","SellingTransactions_Model","Payment_Model","SalvageCart_Model","SalvageItemOrder_Model","User_Model","RefubrishCart_Model",'Notification_Model',"IncomeReport_Model"));
     }
 
 
@@ -160,6 +160,7 @@
                     }
                     
                     $userData = $this->User_Model->user($orderData->seller_id)[0];
+                    $this->generateIncome($orderData->ref_id,$userData->phoneNumber);
                     $this->createpayment($orderData->order_totalAmount,'09999999999',$userData->phoneNumber,$orderData->ref_id,'salvage');
                     $this->updateOrderStatusNotification($orderData->buyer_id,$status);
                     $this->res(1,null,"Successfully Updated",0);
@@ -284,9 +285,17 @@
            $this->Notification_Model->createNotif($payload);
         }
     
-        
+
+        public function generateIncome($refNo,$mobileNumber){
+            $payload = array(
+                "amount" => 10,
+                "refNo" => $refNo,
+                "senderMobile" => $mobileNumber
+            );
+
+
+            $this->IncomeReport_Model->insert($payload);
+        }
     }
-
-
 
 ?>

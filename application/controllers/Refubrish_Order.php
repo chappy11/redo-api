@@ -6,7 +6,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
         public function __construct(){
             parent::__construct();
-            $this->load->model(array('RefubrishOrder_Model','RefubrishOrderItem_Model','RefubrishCart_Model',"Payment_Model","User_Model","RepubrishItem_Model","Notification_Model"));
+            $this->load->model(array('RefubrishOrder_Model','RefubrishOrderItem_Model','RefubrishCart_Model',"Payment_Model","User_Model","RepubrishItem_Model","Notification_Model","IncomeReport_Model"));
         }
 
         public function insert_post(){
@@ -203,6 +203,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
                     "ref_id" => $value->ref_id,
                     'refubrishorder_status' => $value->refubrishorder_status,
                     'total_amount' => $value->total_amount,
+                    'date' => $value->r_order_date,
                     'seller' => $value->fullname,
                     'no_items' => count($this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)),
                     'item' => $this->RefubrishOrderItem_Model->getItems($value->refubrishorder_id)[0]
@@ -262,5 +263,15 @@ include_once(dirname(__FILE__)."/Data_format.php");
         }
 
 
+        public function generateIncome($refNo,$mobileNumber){
+            $payload = array(
+                "amount" => 10,
+                "refNo" => $refNo,
+                "senderMobile" => $mobileNumber
+            );
+
+
+            $this->IncomeReport_Model->insert($payload);
+        }
     }
 ?>
