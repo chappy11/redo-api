@@ -158,10 +158,10 @@
                          );
                          $this->RepubrishItem_Model->insert($repubrishPayload);
                     }
-                    
+                    $amnt = (float)$orderData->order_totalAmount - 10;
                     $userData = $this->User_Model->user($orderData->seller_id)[0];
                     $this->generateIncome($orderData->ref_id,$userData->phoneNumber);
-                    $this->createpayment($orderData->order_totalAmount,'09999999999',$userData->phoneNumber,$orderData->ref_id,'salvage');
+                    $this->createpayment($amnt,'09999999999',$userData->phoneNumber,$orderData->ref_id,'salvage');
                     $this->updateOrderStatusNotification($orderData->buyer_id,$status);
                     $this->res(1,null,"Successfully Updated",0);
 

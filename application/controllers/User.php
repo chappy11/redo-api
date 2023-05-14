@@ -103,7 +103,7 @@
 
 
         public function pending_get(){
-            $data =$this->User_Model->getpendingShop();
+            $data =$this->RepairShop_Model->getAllShop();
 
             $this->res(1,$data,"data found",0);
         }

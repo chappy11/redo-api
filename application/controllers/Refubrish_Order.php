@@ -127,7 +127,9 @@ include_once(dirname(__FILE__)."/Data_format.php");
                 $this->updateOrderStatusNotification($orderData[0]->buyer_id,$status);
                 if($status === 'SUCCESS'){
                     $userData = $this->User_Model->user($orderData[0]->seller_id)[0];
-                    $ispayment = $this->createpayment($orderData[0]->total_amount,'09999999999',$userData->phoneNumber,$orderData[0]->ref_id,'refubrish');   
+                    $this->generateIncome($orderData[0]->ref_id,$userData->phoneNumber);
+                    $amnt = (float)$orderData[0]->total_amount - 20;
+                    $ispayment = $this->createpayment($amnt,'09999999999',$userData->phoneNumber,$orderData[0]->ref_id,'refubrish');   
                 
                     if($ispayment){
                         $this->res(1,null,"Successfully Updated",0);
@@ -265,7 +267,7 @@ include_once(dirname(__FILE__)."/Data_format.php");
 
         public function generateIncome($refNo,$mobileNumber){
             $payload = array(
-                "amount" => 10,
+                "amount" => 20,
                 "refNo" => $refNo,
                 "senderMobile" => $mobileNumber
             );
